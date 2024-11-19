@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Check, X } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 
 const App = () => {
     const [students, setStudents] = useState([]);
