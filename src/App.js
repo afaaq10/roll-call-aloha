@@ -1,3 +1,11 @@
+/**
+ * Project aloha-roll-call
+ * 
+ * @author Afaaq Majeed
+ */
+
+
+
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Check, X } from 'lucide-react';
 
