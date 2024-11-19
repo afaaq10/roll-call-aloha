@@ -45,19 +45,19 @@ const Dashboard = () => {
         return monthData;
     };
 
-    const calculateStats = (attendance) => {
-        const total = attendance.length;
-        const present = attendance.filter(a => a.status === 'present').length;
-        const absent = attendance.filter(a => a.status === 'absent').length;
-        const presentPercentage = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
+    // const calculateStats = (attendance) => {
+    //     const total = attendance.length;
+    //     const present = attendance.filter(a => a.status === 'present').length;
+    //     const absent = attendance.filter(a => a.status === 'absent').length;
+    //     const presentPercentage = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
 
-        return {
-            total,
-            present,
-            absent,
-            presentPercentage
-        };
-    };
+    //     return {
+    //         total,
+    //         present,
+    //         absent,
+    //         presentPercentage
+    //     };
+    // };
 
     const nextMonth = () => {
         setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)));
