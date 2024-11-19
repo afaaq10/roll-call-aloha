@@ -4,7 +4,7 @@
  * @author Afaaq Majeed
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, Trash2, Check, X } from 'lucide-react';
 
 const App = () => {
@@ -63,7 +63,7 @@ const App = () => {
         }
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (showAlert) {
             const timer = setTimeout(() => setShowAlert(false), 3000);
             return () => clearTimeout(timer);
