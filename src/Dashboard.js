@@ -1,3 +1,9 @@
+/**
+ * Project aloha-roll-call
+ * 
+ * @author Afaaq Majeed
+ */
+
 import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
