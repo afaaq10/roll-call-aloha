@@ -125,7 +125,6 @@ const App = () => {
                                     />
                                     <button onClick={addStudent} className="btn">
                                         <Plus size={16} />
-                                        Add Student
                                     </button>
                                 </div>
 
@@ -151,7 +150,6 @@ const App = () => {
                                                             onClick={() => deleteStudent(student.id)}
                                                         >
                                                             <Trash2 size={16} />
-                                                            Delete
                                                         </button>
                                                     </td>
                                                 </tr>
