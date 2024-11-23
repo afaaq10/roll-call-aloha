@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import TakeAttendance from './components/TakeAttendance';
 import ViewAttendance from './components/ViewAttendance';
 import Navbar from './components/Navbar';
