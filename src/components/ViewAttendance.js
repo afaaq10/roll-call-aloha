@@ -30,20 +30,24 @@ const ViewAttendance = () => {
     );
 
     const filterAttendanceByDate = (attendance) => {
-        if (selectedDate) {
-            const formattedSelectedDate = format(new Date(selectedDate), 'yyyy-MM-dd');
-            return attendance.filter(record => {
-                const recordDate = safeFormatDate(record.date);
-                if (!recordDate) {
-                    return false;
-                }
-                console.log('Selected Date:', formattedSelectedDate);
-                console.log('Record Date:', recordDate);
-                return recordDate === formattedSelectedDate;
-            });
+        if (Array.isArray(attendance)) {
+            if (selectedDate) {
+                const formattedSelectedDate = format(new Date(selectedDate), 'yyyy-MM-dd');
+                return attendance.filter(record => {
+                    const recordDate = safeFormatDate(record.date);
+                    if (!recordDate) {
+                        return false;
+                    }
+                    console.log('Selected Date:', formattedSelectedDate);
+                    console.log('Record Date:', recordDate);
+                    return recordDate === formattedSelectedDate;
+                });
+            }
+            return attendance;
         }
-        return attendance;
+        return [];
     };
+
 
     const safeFormatDate = (dateString) => {
         if (typeof dateString === 'number') {
