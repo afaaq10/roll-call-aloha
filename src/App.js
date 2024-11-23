@@ -12,6 +12,7 @@ import ViewAttendance from './components/ViewAttendance';
 import Navbar from './components/Navbar';
 import { Trash2 } from 'lucide-react';
 import { addStudentToDatabase, deleteStudentFromDatabase, fetchStudents, markAttendanceForStudent } from './firebase';
+import Dashboard from './Dashboard';
 
 const App = () => {
     const [students, setStudents] = useState([]);
@@ -100,6 +101,7 @@ const App = () => {
                         path="/view-attendance"
                         element={<ViewAttendance students={students} />}
                     />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route
                         path="/"
                         element={
