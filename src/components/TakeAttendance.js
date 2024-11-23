@@ -5,11 +5,33 @@
  * @project: Roll-Call Aloha
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Check, X } from 'lucide-react';
+import { markAttendanceForStudent, fetchStudents } from '../firebase';
 
-const TakeAttendance = ({ students, markAttendance }) => {
+const TakeAttendance = () => {
+    const [students, setStudents] = useState([]);
+
+    useEffect(() => {
+        const getStudents = async () => {
+            const studentsData = await fetchStudents();
+            setStudents(studentsData);
+        };
+
+        getStudents();
+    }, []);
+
+    const markAttendance = async (studentId, status) => {
+        const attendanceRecord = {
+            [new Date().toISOString().split('T')[0]]: status,
+        };
+        await markAttendanceForStudent(studentId, attendanceRecord);
+
+        const updatedStudentsData = await fetchStudents();
+        setStudents(updatedStudentsData);
+    };
+
     return (
         <div className="p-6">
             <Link to="/" className="flex items-center mb-4 text-lg text-blue-600">
@@ -20,12 +42,18 @@ const TakeAttendance = ({ students, markAttendance }) => {
 
             <div className="space-y-6">
                 {students.map((student) => {
-                    // Determine background color and attendance pill based on the last recorded attendance
-                    const lastAttendance = student.attendance && student.attendance[student.attendance.length - 1];
-                    const isPresent = lastAttendance && lastAttendance.status === 'present';
+                    const lastAttendance = student.attendance && student.attendance.length > 0
+                        ? student.attendance.reduce((latest, record) => {
+                            return new Date(record.date) > new Date(latest.date) ? record : latest;
+                        })
+                        : null;
 
-                    const cardBgColor = isPresent ? 'bg-green-100' : (lastAttendance ? 'bg-red-200' : 'bg-white');
-                    const textColor = isPresent ? 'text-green-800' : (lastAttendance ? 'text-red-800' : 'text-gray-800');
+                    const status = lastAttendance ? lastAttendance.status : null;
+
+                    const isPresent = status === 'present';
+
+                    const cardBgColor = isPresent ? 'bg-green-100' : (status ? 'bg-red-200' : 'bg-white');
+                    const textColor = isPresent ? 'text-green-800' : (status ? 'text-red-800' : 'text-gray-800');
 
                     return (
                         <div
@@ -42,8 +70,7 @@ const TakeAttendance = ({ students, markAttendance }) => {
                                 {lastAttendance && (
                                     <div className="flex gap-2">
                                         <span
-                                            className={`inline-block py-1 px-4 rounded-full text-white ${isPresent ? 'bg-green-500' : 'bg-red-500'
-                                                }`}
+                                            className={`inline-block py-1 px-4 rounded-full text-white ${isPresent ? 'bg-green-500' : 'bg-red-500'}`}
                                         >
                                             {isPresent ? 'Present' : 'Absent'}
                                         </span>

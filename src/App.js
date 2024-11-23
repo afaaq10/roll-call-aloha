@@ -11,6 +11,7 @@ import TakeAttendance from './components/TakeAttendance';
 import ViewAttendance from './components/ViewAttendance';
 import Navbar from './components/Navbar';
 import { Trash2 } from 'lucide-react';
+import { addStudentToDatabase, deleteStudentFromDatabase, fetchStudents, markAttendanceForStudent } from './firebase';
 
 const App = () => {
     const [students, setStudents] = useState([]);
@@ -20,6 +21,14 @@ const App = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const modalRef = useRef(null);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            const studentsData = await fetchStudents();
+            setStudents(studentsData);
+        };
+        fetchData();
+    }, []);
+
     const addStudent = () => {
         if (!newStudent.name || !newStudent.class || !newStudent.phone) {
             setAlertMessage('Please fill in all fields');
@@ -27,8 +36,9 @@ const App = () => {
             return;
         }
 
-        const student = { id: Date.now(), ...newStudent, attendance: [] };
+        const student = { id: Date.now().toString(), ...newStudent, attendance: [] };
         setStudents([...students, student]);
+        addStudentToDatabase(student);
         setNewStudent({ name: '', class: '', phone: '' });
         setAlertMessage('Student added successfully');
         setShowAlert(true);
@@ -36,18 +46,16 @@ const App = () => {
 
     const deleteStudent = (id) => {
         setStudents(students.filter(student => student.id !== id));
+        deleteStudentFromDatabase(id);
         setAlertMessage('Student deleted successfully');
         setShowAlert(true);
     };
 
     const markAttendance = (studentId, status) => {
-        setStudents(students.map(student => {
-            if (student.id === studentId) {
-                const attendance = { date: new Date().toISOString().split('T')[0], status };
-                return { ...student, attendance: [...student.attendance, attendance] };
-            }
-            return student;
-        }));
+        const attendanceRecord = {
+            [new Date().toISOString().split('T')[0]]: status,
+        };
+        markAttendanceForStudent(studentId, attendanceRecord);
         setAlertMessage(`Attendance marked as ${status}`);
         setShowAlert(true);
     };
@@ -86,12 +94,7 @@ const App = () => {
                 <Routes>
                     <Route
                         path="/take-attendance"
-                        element={
-                            <TakeAttendance
-                                students={students}
-                                markAttendance={markAttendance}
-                            />
-                        }
+                        element={<TakeAttendance students={students} markAttendance={markAttendance} />}
                     />
                     <Route
                         path="/view-attendance"

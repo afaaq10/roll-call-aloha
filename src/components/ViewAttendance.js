@@ -5,15 +5,25 @@
  * @project: Roll-Call Aloha
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Calendar } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parse, isValid } from 'date-fns';
 import { ArrowLeft } from 'lucide-react';
+import { fetchStudents } from '../firebase';
 
-const ViewAttendance = ({ students }) => {
+const ViewAttendance = () => {
+    const [students, setStudents] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const studentsData = await fetchStudents();
+            setStudents(studentsData);
+        };
+        fetchData();
+    }, []);
 
     const filteredStudents = students.filter(student =>
         student.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -21,9 +31,29 @@ const ViewAttendance = ({ students }) => {
 
     const filterAttendanceByDate = (attendance) => {
         if (selectedDate) {
-            return attendance.filter(record => record.date === selectedDate);
+            const formattedSelectedDate = format(new Date(selectedDate), 'yyyy-MM-dd');
+            return attendance.filter(record => {
+                const recordDate = safeFormatDate(record.date);
+                if (!recordDate) {
+                    return false;
+                }
+                console.log('Selected Date:', formattedSelectedDate);
+                console.log('Record Date:', recordDate);
+                return recordDate === formattedSelectedDate;
+            });
         }
         return attendance;
+    };
+
+    const safeFormatDate = (dateString) => {
+        if (typeof dateString === 'number') {
+            const date = new Date(dateString);
+            return isValid(date) ? format(date, 'yyyy-MM-dd') : null;
+        } else if (typeof dateString === 'string') {
+            const parsedDate = parse(dateString, 'yyyy-MM-dd', new Date());
+            return isValid(parsedDate) ? format(parsedDate, 'yyyy-MM-dd') : null;
+        }
+        return null;
     };
 
     return (
@@ -75,19 +105,29 @@ const ViewAttendance = ({ students }) => {
                                     <td className="p-4">
                                         {filteredAttendance.length > 0 ? (
                                             <ul>
-                                                {filteredAttendance.map((record, index) => (
-                                                    <li key={index} className="flex items-center justify-between py-1">
-                                                        <span className="text-gray-600">
-                                                            {format(new Date(record.date), 'dd MMM yyyy')}:
-                                                        </span>
-                                                        <span
-                                                            className={`inline-block px-4 py-1 rounded-full text-white ${record.status === 'present' ? 'bg-green-500' : 'bg-red-500'
-                                                                }`}
-                                                        >
-                                                            {record.status === 'present' ? 'Present' : 'Absent'}
-                                                        </span>
-                                                    </li>
-                                                ))}
+                                                {filteredAttendance.map((record, index) => {
+                                                    const formattedDate = safeFormatDate(record.date);
+
+                                                    if (!formattedDate) {
+                                                        return (
+                                                            <li key={index} className="text-red-500">Invalid date</li>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <li key={index} className="flex items-center justify-between py-1">
+                                                            <span className="text-gray-600">
+                                                                {format(new Date(formattedDate), 'dd MMM yyyy')}:
+                                                            </span>
+                                                            <span
+                                                                className={`inline-block px-4 py-1 rounded-full text-white ${record.status === 'present' ? 'bg-green-500' : 'bg-red-500'
+                                                                    }`}
+                                                            >
+                                                                {record.status === 'present' ? 'Present' : 'Absent'}
+                                                            </span>
+                                                        </li>
+                                                    );
+                                                })}
                                             </ul>
                                         ) : (
                                             <span>No attendance recorded</span>
