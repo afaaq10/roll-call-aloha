@@ -1,7 +1,8 @@
 /**
  * 
- * @author Afaaq Majeed
- * @project aloha-roll-call
+ * @author: Afaaq Majeed
+ * 
+ * @project: Roll-Call Aloha
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -9,7 +10,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import TakeAttendance from './components/TakeAttendance';
 import ViewAttendance from './components/ViewAttendance';
 import Navbar from './components/Navbar';
-import { Plus, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 const App = () => {
     const [students, setStudents] = useState([]);
@@ -53,7 +54,6 @@ const App = () => {
 
     const toggleMenu = () => setMenuOpen(!menuOpen);
 
-    // Close the modal when clicking outside of it
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (modalRef.current && !modalRef.current.contains(e.target)) {
@@ -74,11 +74,11 @@ const App = () => {
 
     return (
         <Router>
-            <div className="max-w-4xl p-4 mx-auto">
+            <div className="max-w-4xl p-6 mx-auto">
                 <Navbar toggleMenu={toggleMenu} menuOpen={menuOpen} setMenuOpen={setMenuOpen} modalRef={modalRef} />
 
                 {showAlert && (
-                    <div className="mb-4 alert alert-success">
+                    <div className="p-2 mb-4 text-green-800 bg-green-100 rounded-lg">
                         <strong>{alertMessage}</strong>
                     </div>
                 )}
@@ -101,30 +101,33 @@ const App = () => {
                         path="/"
                         element={
                             <>
-                                <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
+                                <div className="flex flex-col gap-6 mb-6">
                                     <input
                                         type="text"
                                         placeholder="Student Name"
                                         value={newStudent.name}
                                         onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
-                                        className="input"
+                                        className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <input
                                         type="text"
                                         placeholder="Level"
                                         value={newStudent.class}
                                         onChange={(e) => setNewStudent({ ...newStudent, class: e.target.value })}
-                                        className="input"
+                                        className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <input
                                         type="text"
                                         placeholder="Phone Number"
                                         value={newStudent.phone}
                                         onChange={(e) => setNewStudent({ ...newStudent, phone: e.target.value })}
-                                        className="input"
+                                        className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
-                                    <button onClick={addStudent} className="btn">
-                                        <Plus size={16} />
+                                    <button
+                                        onClick={addStudent}
+                                        className="p-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                                    >
+                                        Register
                                     </button>
                                 </div>
 
@@ -146,7 +149,7 @@ const App = () => {
                                                     <td className="p-4">{student.phone}</td>
                                                     <td className="p-4">
                                                         <button
-                                                            className="btn-danger"
+                                                            className="p-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
                                                             onClick={() => deleteStudent(student.id)}
                                                         >
                                                             <Trash2 size={16} />

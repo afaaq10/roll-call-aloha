@@ -1,3 +1,10 @@
+/**
+ * 
+ * @author: Afaaq Majeed
+ * 
+ * @project: Roll-Call Aloha
+ */
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
