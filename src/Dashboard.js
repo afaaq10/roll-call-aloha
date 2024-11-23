@@ -5,8 +5,9 @@
  * @project: Roll-Call Aloha
  */
 
+
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Calendar, ChevronLeft, ChevronRight, Users, CalendarDays } from 'lucide-react';
 import { fetchStudents } from './firebase';
 
@@ -26,6 +27,13 @@ const Dashboard = () => {
     const [attendanceData, setAttendanceData] = useState([]);
     const [totalStudents, setTotalStudents] = useState(0);
     const [totalPresent, setTotalPresent] = useState(0);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -90,7 +98,8 @@ const Dashboard = () => {
                 : 0;
 
             return {
-                name: `Level ${classLevel}`,
+                name: `L${classLevel}`,
+                fullName: `Level ${classLevel}`,
                 present: presentPercentage,
                 absent: absentPercentage,
                 totalStudents: stats.totalStudents,
@@ -120,7 +129,7 @@ const Dashboard = () => {
             const data = payload[0].payload;
             return (
                 <div className="p-3 bg-white border rounded-lg shadow-lg">
-                    <p className="text-sm font-bold text-gray-800">{label}</p>
+                    <p className="text-sm font-bold text-gray-800">{data.fullName}</p>
                     <div className="mt-2 space-y-1">
                         <p className="text-sm text-emerald-600">Present: {data.present}%</p>
                         <p className="text-sm text-red-600">Absent: {data.absent}%</p>
@@ -133,14 +142,23 @@ const Dashboard = () => {
         return null;
     };
 
+    const CustomLegend = ({ payload }) => (
+        <div className="flex justify-center gap-4 mt-2 text-sm">
+            {payload.map((entry, index) => (
+                <div key={index} className="flex items-center gap-1">
+                    <div className={`w-3 h-3 rounded ${entry.color === "#10b981" ? "bg-emerald-500" : "bg-red-500"}`} />
+                    <span>{entry.value}</span>
+                </div>
+            ))}
+        </div>
+    );
+
     return (
         <div className="min-h-screen p-4 bg-gray-50 lg:p-8">
             <div className="mx-auto max-w-7xl">
-                {/* Header Section */}
                 <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
                     <h1 className="text-2xl font-bold text-gray-800 lg:text-3xl">Attendance Dashboard</h1>
 
-                    {/* Month Navigation */}
                     <div className="flex items-center space-x-2 sm:space-x-4">
                         <button
                             onClick={prevMonth}
@@ -160,7 +178,6 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* Stats Cards */}
                 <div className="grid gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-3">
                     <StatsCard
                         title="Total Students"
@@ -181,41 +198,49 @@ const Dashboard = () => {
                     />
                 </div>
 
-                {/* Chart Section */}
-                <div className="p-6 bg-white rounded-lg shadow-sm">
+                <div className="p-4 bg-white rounded-lg shadow-sm sm:p-6">
                     <h2 className="mb-4 text-lg font-semibold text-gray-800">Attendance Statistics by Level</h2>
-                    <div className="h-[400px] w-full mt-4">
+                    <div className="w-full mt-4" style={{ height: windowWidth < 640 ? '300px' : '400px' }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={attendanceData}
-                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                margin={
+                                    windowWidth < 640
+                                        ? { top: 20, right: 10, left: -8, bottom: 20 }
+                                        : { top: 20, right: 30, left: 20, bottom: 5 }
+                                }
+                                barSize={windowWidth < 640 ? 15 : 20}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis
                                     dataKey="name"
-                                    tick={{ fontSize: 12 }}
+                                    tick={{ fontSize: windowWidth < 640 ? 10 : 12 }}
                                     interval={0}
-                                    angle={-45}
-                                    textAnchor="end"
-                                    height={60}
+                                    angle={windowWidth < 640 ? 0 : -45}
+                                    textAnchor={windowWidth < 640 ? "middle" : "end"}
+                                    height={windowWidth < 640 ? 30 : 60}
                                 />
                                 <YAxis
                                     domain={[0, 100]}
-                                    ticks={[0, 20, 40, 60, 80, 100]}
-                                    tick={{ fontSize: 12 }}
+                                    ticks={[0, 25, 50, 75, 100]}
+                                    tick={{ fontSize: windowWidth < 640 ? 10 : 12 }}
+                                    width={windowWidth < 640 ? 30 : 40}
                                 />
                                 <Tooltip content={CustomTooltip} />
+                                <Legend content={CustomLegend} />
                                 <Bar
                                     dataKey="present"
                                     fill="#10b981"
                                     name="Present"
                                     radius={[4, 4, 0, 0]}
+                                    maxBarSize={50}
                                 />
                                 <Bar
                                     dataKey="absent"
                                     fill="#ef4444"
                                     name="Absent"
                                     radius={[4, 4, 0, 0]}
+                                    maxBarSize={50}
                                 />
                             </BarChart>
                         </ResponsiveContainer>
