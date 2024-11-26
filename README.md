@@ -42,4 +42,4 @@ Your app will be available at http://localhost:3000.
 
 - Replace `your-api-key`, `your-auth-domain`, `your-project-id`, etc., with your actual Firebase credentials in the `.env` section.
 
-Suggestions and feedback are welcome! Feel free to open an issue or pull request with your ideas for improvement or new features.
+Suggestions and feedback are welcome! Feel free to open an issue or pull request for improvement or new features.
