@@ -8,8 +8,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Calendar, ChevronLeft, ChevronRight, Users, CalendarDays } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Users, CalendarDays, ArrowLeft } from 'lucide-react';
 import { fetchStudents } from './firebase';
+import { Link } from 'react-router-dom';
 
 const StatsCard = ({ title, value, icon: Icon, valueColor = "text-gray-900" }) => (
     <div className="p-6 bg-white rounded-lg shadow-sm">
@@ -156,6 +157,9 @@ const Dashboard = () => {
     return (
         <div className="min-h-screen p-4 bg-gray-50 lg:p-8">
             <div className="mx-auto max-w-7xl">
+                <Link to="/" className="flex items-center mb-4 text-lg text-blue-600">
+                    <ArrowLeft size={20} className="mr-2" /> Home
+                </Link>
                 <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
                     <h1 className="text-2xl font-bold text-gray-800 lg:text-3xl">Attendance Dashboard</h1>
 

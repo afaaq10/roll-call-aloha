@@ -10,16 +10,21 @@ import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import TakeAttendance from './components/TakeAttendance';
 import ViewAttendance from './components/ViewAttendance';
 import Navbar from './components/Navbar';
-import { Trash2 } from 'lucide-react';
+import { Edit2, Trash2 } from 'lucide-react';
 import { addStudentToDatabase, deleteStudentFromDatabase, fetchStudents, markAttendanceForStudent } from './firebase';
 import Dashboard from './Dashboard';
 
 const App = () => {
     const [students, setStudents] = useState([]);
     const [newStudent, setNewStudent] = useState({ name: '', class: '', phone: '' });
+
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
+
     const [menuOpen, setMenuOpen] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [studentToDelete, setStudentToDelete] = useState(null);
+
     const modalRef = useRef(null);
 
     useEffect(() => {
@@ -46,11 +51,19 @@ const App = () => {
     };
 
     const deleteStudent = (id) => {
-        setStudents(students.filter(student => student.id !== id));
-        deleteStudentFromDatabase(id);
-        setAlertMessage('Student deleted successfully');
-        setShowAlert(true);
-    };
+        setShowDeleteModal(true);
+        setStudentToDelete(id);
+    }
+
+    const handleConfirmDelete = () => {
+        if (studentToDelete) {
+            setStudents(students.filter(student => student.id !== studentToDelete));
+            deleteStudentFromDatabase(studentToDelete);
+            setAlertMessage('Student deleted successfully');
+            setShowAlert(true);
+        }
+        setShowDeleteModal(false);
+    }
 
     const markAttendance = (studentId, status) => {
         const attendanceRecord = {
@@ -92,6 +105,28 @@ const App = () => {
                     </div>
                 )}
 
+                {showDeleteModal && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+                        <div className="w-1/3 p-6 bg-white rounded-lg shadow-lg">
+                            <h3 className="mb-4 text-xl">Are you sure you want to delete this student?</h3>
+                            <div className="flex justify-between">
+                                <button
+                                    onClick={() => setShowDeleteModal(false)}
+                                    className="px-4 py-2 text-white bg-gray-400 rounded hover:bg-gray-500"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleConfirmDelete}
+                                    className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <Routes>
                     <Route
                         path="/take-attendance"
@@ -122,7 +157,7 @@ const App = () => {
                                         className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <input
-                                        type="text"
+                                        type="number"
                                         placeholder="Phone Number"
                                         value={newStudent.phone}
                                         onChange={(e) => setNewStudent({ ...newStudent, phone: e.target.value })}
@@ -152,7 +187,13 @@ const App = () => {
                                                     <td className="p-4">{student.name}</td>
                                                     <td className="p-4">{student.class}</td>
                                                     <td className="p-4">{student.phone}</td>
-                                                    <td className="p-4">
+                                                    <td className="flex gap-4 p-4">
+                                                        <button
+                                                            className="p-2 text-white bg-gray-500 rounded-lg hover:bg-gray-700"
+                                                            onClick={() => {}}
+                                                        >
+                                                            <Edit2 size={16} />
+                                                        </button>
                                                         <button
                                                             className="p-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
                                                             onClick={() => deleteStudent(student.id)}

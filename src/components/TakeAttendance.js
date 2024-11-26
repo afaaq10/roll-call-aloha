@@ -35,7 +35,7 @@ const TakeAttendance = () => {
     return (
         <div className="p-6">
             <Link to="/" className="flex items-center mb-4 text-lg text-blue-600">
-                <ArrowLeft size={20} className="mr-2" /> Back to Home
+                <ArrowLeft size={20} className="mr-2" />Home
             </Link>
 
             <h2 className="mb-6 text-2xl font-semibold">Take Attendance</h2>
