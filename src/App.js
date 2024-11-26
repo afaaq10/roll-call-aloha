@@ -25,6 +25,7 @@ const App = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [studentToDelete, setStudentToDelete] = useState(null);
 
+    const [studentToEdit, setStudentToEdit] = useState(null);
     const modalRef = useRef(null);
 
     useEffect(() => {
@@ -48,6 +49,35 @@ const App = () => {
         setNewStudent({ name: '', class: '', phone: '' });
         setAlertMessage('Student added successfully');
         setShowAlert(true);
+    };
+
+    const handleEditStudent = (student) => {
+        setStudentToEdit(student); // Set the student being edited
+        setNewStudent({
+            name: student.name,
+            class: student.class,
+            phone: student.phone,
+        }); // Pre-populate form with student data
+    };
+
+    // Save edited student details
+    const handleSaveEdit = () => {
+        if (!newStudent.name || !newStudent.class || !newStudent.phone) {
+            setAlertMessage('Please fill in all fields');
+            setShowAlert(true);
+            return;
+        }
+
+        const updatedStudent = { ...studentToEdit, ...newStudent };
+        setStudents(students.map(student =>
+            student.id === studentToEdit.id ? updatedStudent : student
+        ));
+
+        addStudentToDatabase(updatedStudent); // Update Firebase
+        setAlertMessage('Student details updated successfully');
+        setShowAlert(true);
+        setStudentToEdit(null); // Reset editing state
+        setNewStudent({ name: '', class: '', phone: '' }); // Clear form
     };
 
     const deleteStudent = (id) => {
@@ -106,19 +136,19 @@ const App = () => {
                 )}
 
                 {showDeleteModal && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-                        <div className="w-1/3 p-6 bg-white rounded-lg shadow-lg">
-                            <h3 className="mb-4 text-xl">Are you sure you want to delete this student?</h3>
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50">
+                        <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg sm:w-1/3">
+                            <h3 className="mb-4 text-lg font-semibold sm:text-xl">Are you sure you want to delete this student?</h3>
                             <div className="flex justify-between">
                                 <button
                                     onClick={() => setShowDeleteModal(false)}
-                                    className="px-4 py-2 text-white bg-gray-400 rounded hover:bg-gray-500"
+                                    className="px-4 py-2 text-sm text-white bg-gray-400 rounded hover:bg-gray-500 sm:text-base"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleConfirmDelete}
-                                    className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700"
+                                    className="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 sm:text-base"
                                 >
                                     Delete
                                 </button>
@@ -164,10 +194,10 @@ const App = () => {
                                         className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <button
-                                        onClick={addStudent}
+                                        onClick={studentToEdit ? handleSaveEdit : addStudent}
                                         className="p-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                                     >
-                                        Register
+                                        {studentToEdit ? 'Edit' : 'Register'}
                                     </button>
                                 </div>
 
@@ -190,7 +220,7 @@ const App = () => {
                                                     <td className="flex gap-4 p-4">
                                                         <button
                                                             className="p-2 text-white bg-gray-500 rounded-lg hover:bg-gray-700"
-                                                            onClick={() => {}}
+                                                            onClick={() => handleEditStudent(student)}
                                                         >
                                                             <Edit2 size={16} />
                                                         </button>
