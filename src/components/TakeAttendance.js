@@ -49,7 +49,7 @@ const TakeAttendance = ({ selectedProgram }) => {
 
             <h2 className="mb-6 text-2xl font-semibold">Take Attendance</h2>
 
-            <div className="space-y-6">
+            <div className="space-y-3">
                 {students.length === 0 ? (
                     <p>No students found for the selected program.</p>
                 ) : (
@@ -70,25 +70,24 @@ const TakeAttendance = ({ selectedProgram }) => {
                         return (
                             <div
                                 key={student.id}
-                                className={`shadow-md rounded-lg p-6 flex flex-col gap-4 border ${cardBgColor} ${textColor}`}
+                                className={`md:w-[28rem] shadow-md rounded-lg p-3 flex flex-col gap-4 border ${cardBgColor} ${textColor}`}
                             >
-                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                                    <div>
-                                        <h3 className="text-xl font-medium">{student.name}</h3>
-                                        <p className="text-gray-600">Level: {student.class}</p>
-                                        <p className="text-gray-600">Phone: {student.phone}</p>
-                                    </div>
-
+                                {/* <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"> */}
+                                <div className="flex flex-row justify-between">
+                                    <h3 className="text-xl font-medium">{student.name}</h3>
+                                    <p className="font-semibold text-gray-600">Level: {student.class}</p>
                                     {lastAttendance && (
-                                        <div className="flex gap-2">
+                                        <div className="">
                                             <span
-                                                className={`inline-block py-1 px-4 rounded-full text-white ${isPresent ? 'bg-green-500' : 'bg-red-500'}`}
+                                                className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white ${isPresent ? 'bg-green-500' : 'bg-red-500'}`}
                                             >
-                                                {isPresent ? 'Present' : 'Absent'}
+                                                {isPresent ? 'P' : 'A'}
                                             </span>
                                         </div>
                                     )}
+                                    {/* <p className="text-gray-600">Phone: {student.phone}</p> */}
                                 </div>
+                                {/* </div> */}
 
                                 <div className="flex gap-4 mt-4">
                                     <button

@@ -16,9 +16,10 @@ const ViewAttendance = ({ selectedProgram }) => {
     const [students, setStudents] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
+    const [openAccordion, setOpenAccordion] = useState(null);
 
     useEffect(() => {
-        console.log("Selected Porogram:", selectedProgram);
+        console.log("Selected Program:", selectedProgram);
         const fetchData = async () => {
             const studentsData = await fetchStudents(selectedProgram);
             setStudents(studentsData);
@@ -58,31 +59,35 @@ const ViewAttendance = ({ selectedProgram }) => {
         return null;
     };
 
+    const toggleAccordion = (studentId) => {
+        setOpenAccordion(openAccordion === studentId ? null : studentId);
+    };
+
     return (
         <div className="p-6">
             <Link to="/" className="flex items-center mb-4 text-lg text-blue-600">
                 <ArrowLeft size={20} className="mr-2" />
             </Link>
 
-            <h2 className="mb-6 text-2xl font-semibold">View Attendance</h2>
+            <h2 className="mb-6 text-2xl font-semibold text-center">View Attendance</h2>
 
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-2">
+            <div className="flex flex-col items-center justify-between mb-6 space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+                <div className="flex items-center w-full space-x-2 md:w-auto">
                     <Search size={18} className="text-gray-500" />
                     <input
                         type="text"
                         placeholder="Search by student name"
-                        className="px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 sm:w-64"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center w-full space-x-2 md:w-auto">
                     <Calendar size={18} className="text-gray-500" />
                     <input
                         type="date"
-                        className="px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 sm:w-64"
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
                     />
@@ -94,45 +99,57 @@ const ViewAttendance = ({ selectedProgram }) => {
                     <thead>
                         <tr className="bg-gray-100 border-b">
                             <th className="p-4 font-semibold text-left text-gray-600">Name</th>
-                            <th className="p-4 font-semibold text-left text-gray-600">Attendance History</th>
+                            <th className="p-4 font-semibold text-left text-gray-600">Attendance</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredStudents.map((student) => {
                             const filteredAttendance = filterAttendanceByDate(student.attendance);
+                            const isOpen = openAccordion === student.id;
 
                             return (
                                 <tr key={student.id} className="border-b hover:bg-gray-50">
                                     <td className="p-4">{student.name}</td>
                                     <td className="p-4">
-                                        {filteredAttendance.length > 0 ? (
-                                            <ul>
-                                                {filteredAttendance.map((record, index) => {
-                                                    const formattedDate = safeFormatDate(record.date);
+                                        <button
+                                            onClick={() => toggleAccordion(student.id)}
+                                            className="text-blue-500 hover:text-blue-700 focus:outline-none"
+                                        >
+                                            {isOpen ? 'Hide' : 'Show'}
+                                        </button>
 
-                                                    if (!formattedDate) {
-                                                        return (
-                                                            <li key={index} className="text-red-500">Invalid date</li>
-                                                        );
-                                                    }
+                                        {/* Accordion Content */}
+                                        {isOpen && (
+                                            <div className="mt-4">
+                                                {filteredAttendance.length > 0 ? (
+                                                    <ul>
+                                                        {filteredAttendance.map((record, index) => {
+                                                            const formattedDate = safeFormatDate(record.date);
 
-                                                    return (
-                                                        <li key={index} className="flex items-center justify-between py-1">
-                                                            <span className="text-gray-600">
-                                                                {format(new Date(formattedDate), 'dd MMM yyyy')}:
-                                                            </span>
-                                                            <span
-                                                                className={`inline-block px-4 py-1 rounded-full text-white ${record.status === 'present' ? 'bg-green-500' : 'bg-red-500'
-                                                                    }`}
-                                                            >
-                                                                {record.status === 'present' ? 'Present' : 'Absent'}
-                                                            </span>
-                                                        </li>
-                                                    );
-                                                })}
-                                            </ul>
-                                        ) : (
-                                            <span>No attendance recorded</span>
+                                                            if (!formattedDate) {
+                                                                return (
+                                                                    <li key={index} className="text-red-500">Invalid date</li>
+                                                                );
+                                                            }
+
+                                                            return (
+                                                                <li key={index} className="flex items-center justify-between py-2">
+                                                                    <span className="text-gray-600">
+                                                                        {format(new Date(formattedDate), 'dd MMM yyyy')}:
+                                                                    </span>
+                                                                    <span
+                                                                        className={`inline-block px-4 py-1 rounded-full text-white ${record.status === 'present' ? 'bg-green-500' : 'bg-red-500'}`}
+                                                                    >
+                                                                        {record.status === 'present' ? 'Present' : 'Absent'}
+                                                                    </span>
+                                                                </li>
+                                                            );
+                                                        })}
+                                                    </ul>
+                                                ) : (
+                                                    <span>No attendance recorded</span>
+                                                )}
+                                            </div>
                                         )}
                                     </td>
                                 </tr>
