@@ -9,7 +9,7 @@ import React, { useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 
-const Navbar = ({ toggleMenu, menuOpen, setMenuOpen, selectedProgram }) => {
+const Navbar = ({ toggleMenu, menuOpen, setMenuOpen, selectedProgram, handleLogout }) => {
     const modalRef = useRef();
 
     useEffect(() => {
@@ -60,6 +60,12 @@ const Navbar = ({ toggleMenu, menuOpen, setMenuOpen, selectedProgram }) => {
                     >
                         View Attendance
                     </NavLink>
+                    <button
+                        onClick={handleLogout}
+                        className="block w-full px-4 py-2 mt-2 text-left text-red-600 rounded-md hover:bg-gray-200"
+                    >
+                        Log Out
+                    </button>
                 </div>
             )}
         </div>

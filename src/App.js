@@ -6,13 +6,14 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { HashRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import TakeAttendance from './components/TakeAttendance';
 import ViewAttendance from './components/ViewAttendance';
 import Navbar from './components/Navbar';
 import { Edit2, Trash2 } from 'lucide-react';
 import { addStudentToDatabase, deleteStudentFromDatabase, fetchStudents, markAttendanceForStudent } from './firebase';
 import Dashboard from './Dashboard';
+import Login from './components/Login';
 
 const App = () => {
     const [students, setStudents] = useState([]);
@@ -30,8 +31,22 @@ const App = () => {
 
     const [selectedProgram, setSelectedProgram] = useState('tiny_tots');
 
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const storedAuthStatus = localStorage.getItem('isAuthenticated');
+        if (storedAuthStatus === 'true') {
+            setIsAuthenticated(true);  // User is authenticated
+        }
+    }, []);
+
     const handleProgramChange = (program) => {
         setSelectedProgram(program);
+    };
+
+    const handleLogin = () => {
+        setIsAuthenticated(true);
+        localStorage.setItem('isAuthenticated', 'true');
     };
 
     useEffect(() => {
@@ -129,10 +144,16 @@ const App = () => {
         }
     }, [showAlert]);
 
+    const handleLogout = () => {
+        setIsAuthenticated(false);
+        localStorage.removeItem('isAuthenticated');
+        <Navigate to="/login" />;
+    };
+
     return (
         <Router>
             <div className="max-w-4xl p-6 mx-auto">
-                <Navbar toggleMenu={toggleMenu} menuOpen={menuOpen} setMenuOpen={setMenuOpen} modalRef={modalRef} selectedProgram={selectedProgram} />
+                {isAuthenticated && <Navbar toggleMenu={toggleMenu} menuOpen={menuOpen} setMenuOpen={setMenuOpen} modalRef={modalRef} handleLogout={handleLogout} selectedProgram={selectedProgram} />}
 
                 {showAlert && (
                     <div className="p-2 mb-4 text-green-800 bg-green-100 rounded-lg">
@@ -140,7 +161,7 @@ const App = () => {
                     </div>
                 )}
 
-                <div className="flex justify-end gap-2 mb-4">
+                {isAuthenticated && <div className="flex justify-end gap-2 mb-4">
                     <button
                         className={`px-4 py-2 text-white rounded-md ${selectedProgram === 'tiny_tots' ? 'bg-blue-600' : 'bg-gray-300'}`}
                         onClick={() => handleProgramChange('tiny_tots')}
@@ -154,7 +175,7 @@ const App = () => {
                         Mental Arithmetic
                     </button>
                 </div>
-
+                }
                 {showDeleteModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50">
                         <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg sm:w-1/3">
@@ -178,7 +199,13 @@ const App = () => {
                 )}
 
                 <Routes>
+                    {/* <Route path="/login" element={<Login onLogin={handleLogin} />} />
+                     */}
                     <Route
+                        path="/login"
+                        element={isAuthenticated ? <Navigate to="/" /> : <Login onLogin={handleLogin} />}
+                    />
+                    {/* <Route
                         path="/take-attendance/:selectedProgram"
                         element={<TakeAttendance students={students} selectedProgram={selectedProgram} markAttendance={markAttendance} />}
                     />
@@ -186,10 +213,23 @@ const App = () => {
                         path="/view-attendance/:selectedProgram"
                         element={<ViewAttendance students={students} selectedProgram={selectedProgram} />}
                     />
-                    <Route path="/dashboard/:selectedProgram" element={<Dashboard selectedProgram={selectedProgram} onProgramChange={handleProgramChange} />} />
+                    <Route path="/dashboard/:selectedProgram" element={<Dashboard selectedProgram={selectedProgram} onProgramChange={handleProgramChange} />} /> */}
+
+                    <Route
+                        path="/take-attendance/:selectedProgram"
+                        element={isAuthenticated ? <TakeAttendance students={students} selectedProgram={selectedProgram} markAttendance={markAttendance} /> : <Navigate to="/login" />}
+                    />
+                    <Route
+                        path="/view-attendance/:selectedProgram"
+                        element={isAuthenticated ? <ViewAttendance students={students} selectedProgram={selectedProgram} /> : <Navigate to="/login" />}
+                    />
+                    <Route
+                        path="/dashboard/:selectedProgram"
+                        element={isAuthenticated ? <Dashboard selectedProgram={selectedProgram} onProgramChange={handleProgramChange} /> : <Navigate to="/login" />}
+                    />
                     <Route
                         path="/"
-                        element={
+                        element={isAuthenticated ? (
                             <>
                                 <div className="flex flex-col gap-6 mb-6">
                                     <input
@@ -257,6 +297,7 @@ const App = () => {
                                     </table>
                                 </div>
                             </>
+                        ) : <Navigate to="/login" />
                         }
                     />
                 </Routes>

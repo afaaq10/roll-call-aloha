@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, get, remove } from "firebase/database";
+import { getAuth, signOut } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -13,6 +14,37 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
+
+export const loginAdmin = async (username, password) => {
+    try {
+        const adminRef = ref(db, "adminCredentials");
+        const snapshot = await get(adminRef);
+
+        if (snapshot.exists()) {
+            const adminCredentials = snapshot.val();
+            if (adminCredentials.username === username && adminCredentials.password === password) {
+                return true;
+            } else {
+                throw new Error("Invalid username or password");
+            }
+        } else {
+            throw new Error("Admin credentials not found");
+        }
+    } catch (error) {
+        console.error("Login error:", error);
+        return false;
+    }
+};
+
+export const logoutAdmin = async () => {
+    try {
+        await signOut(auth);
+        console.log("Logged out successfully");
+    } catch (error) {
+        console.error("Error logging out: ", error);
+    }
+};
 
 export const addStudentToDatabase = (program, student) => {
     const studentRef = ref(db, `students/${program}/${student.id}`);
