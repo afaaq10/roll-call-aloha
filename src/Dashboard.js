@@ -221,14 +221,12 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                     </div>
                 </div>
 
-
-
                 {isModalOpen && (
                     <div
                         className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 modal-overlay"
                         onClick={handleOutsideClick}
                     >
-                        <div className="bg-white rounded-lg shadow-lg w-[25rem] sm:w-96 md:w-[700px] p-6 relative">
+                        <div className="bg-white rounded-lg shadow-lg w-[23rem] sm:w-96 md:w-[700px] p-6 relative">
                             <button
                                 onClick={toggleModal}
                                 className="absolute p-2 text-gray-500 top-2 right-2 hover:text-gray-700"
