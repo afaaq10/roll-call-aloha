@@ -238,7 +238,7 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                                 <thead>
                                     <tr>
                                         <th className="px-4 py-2 font-semibold text-gray-600">Name</th>
-                                        <th className="px-4 py-2 font-semibold text-gray-600">Class</th>
+                                        <th className="px-4 py-2 font-semibold text-gray-600">Level</th>
                                         <th className="px-4 py-2 font-semibold text-gray-600">Attendance</th>
                                     </tr>
                                 </thead>
