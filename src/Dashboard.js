@@ -5,10 +5,9 @@
  * @project: Roll-Call Aloha
  */
 
-
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Calendar, ChevronLeft, ChevronRight, Users, CalendarDays, ArrowLeft } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Users, CalendarDays, ArrowLeft, Eye } from 'lucide-react';
 import { fetchStudents } from './firebase';
 import { Link } from 'react-router-dom';
 
@@ -22,13 +21,16 @@ const StatsCard = ({ title, value, icon: Icon, valueColor = "text-gray-900" }) =
     </div>
 );
 
-const Dashboard = () => {
+const Dashboard = ({ selectedProgram, onProgramChange }) => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [students, setStudents] = useState([]);
     const [attendanceData, setAttendanceData] = useState([]);
     const [totalStudents, setTotalStudents] = useState(0);
     const [totalPresent, setTotalPresent] = useState(0);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+    const [attendanceList, setAttendanceList] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
@@ -38,11 +40,11 @@ const Dashboard = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const studentsData = await fetchStudents();
+            const studentsData = await fetchStudents(selectedProgram);
             setStudents(studentsData);
         };
         fetchData();
-    }, []);
+    }, [selectedProgram]);
 
     const getMonthAttendance = () => {
         const year = currentMonth.getFullYear();
@@ -111,6 +113,24 @@ const Dashboard = () => {
         setAttendanceData(data);
     };
 
+    const getAttendanceList = () => {
+        const attendanceDetails = students.map(student => {
+            const attendance = student.attendance || [];
+            const currentMonthAttendance = attendance.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate.getMonth() === currentMonth.getMonth() && recordDate.getFullYear() === currentMonth.getFullYear();
+            });
+
+            const currentMonthStatus = currentMonthAttendance.length > 0 ? currentMonthAttendance[currentMonthAttendance.length - 1].status : 'absent';
+            return {
+                name: student.name,
+                class: student.class,
+                status: currentMonthStatus
+            };
+        });
+        setAttendanceList(attendanceDetails);
+    };
+
     const nextMonth = () => {
         setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)));
     };
@@ -122,6 +142,7 @@ const Dashboard = () => {
     useEffect(() => {
         if (students.length > 0) {
             getMonthAttendance();
+            getAttendanceList();
         }
     }, [currentMonth, students]);
 
@@ -154,16 +175,34 @@ const Dashboard = () => {
         </div>
     );
 
+    const toggleModal = () => {
+        setIsModalOpen(!isModalOpen);
+    };
+
+    const handleOutsideClick = (e) => {
+        if (e.target.classList.contains('modal-overlay')) {
+            setIsModalOpen(false);
+        }
+    };
+
     return (
         <div className="min-h-screen p-4 bg-gray-50 lg:p-8">
             <div className="mx-auto max-w-7xl">
-                <Link to="/" className="flex items-center mb-4 text-lg text-blue-600">
-                    <ArrowLeft size={20} className="mr-2" /> Home
-                </Link>
+                <div className="flex justify-between">
+                    <Link to="/" className="flex items-center mb-4 text-lg text-blue-600">
+                        <ArrowLeft size={20} className="mr-2" />
+                    </Link>
+                    <button
+                        onClick={toggleModal}
+                        className="flex items-center p-1 mb-4 text-white bg-blue-500 rounded-lg hover:bg-blue-700"
+                    >
+                        <Eye size={18} className="" />
+                    </button>
+                </div>
                 <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
-                    <h1 className="text-2xl font-bold text-gray-800 lg:text-3xl">Attendance Dashboard</h1>
+                    <h1 className="text-xl font-bold text-center text-gray-800 md:text-left lg:text-2xl">Attendance Dashboard</h1>
 
-                    <div className="flex items-center space-x-2 sm:space-x-4">
+                    <div className="flex items-center justify-center space-x-2 md:justify-end sm:space-x-4">
                         <button
                             onClick={prevMonth}
                             className="p-2 text-gray-600 transition-all bg-white rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900"
@@ -181,6 +220,43 @@ const Dashboard = () => {
                         </button>
                     </div>
                 </div>
+
+
+
+                {isModalOpen && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 modal-overlay"
+                        onClick={handleOutsideClick}
+                    >
+                        <div className="bg-white rounded-lg shadow-lg w-[25rem] sm:w-96 md:w-[700px] p-6 relative">
+                            <button
+                                onClick={toggleModal}
+                                className="absolute p-2 text-gray-500 top-2 right-2 hover:text-gray-700"
+                            >
+                                <span className="sr-only">Close</span> ×
+                            </button>
+                            <h2 className="mb-4 text-lg font-semibold text-gray-800">Student Attendance List</h2>
+                            <table className="w-full text-left border-collapse table-auto">
+                                <thead>
+                                    <tr>
+                                        <th className="px-4 py-2 font-semibold text-gray-600">Name</th>
+                                        <th className="px-4 py-2 font-semibold text-gray-600">Class</th>
+                                        <th className="px-4 py-2 font-semibold text-gray-600">Attendance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {attendanceList.map((student, index) => (
+                                        <tr key={index} className="border-b hover:bg-gray-50">
+                                            <td className="px-4 py-2">{student.name}</td>
+                                            <td className="px-4 py-2">{student.class}</td>
+                                            <td className="px-4 py-2">{student.status}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
 
                 <div className="grid gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-3">
                     <StatsCard
@@ -208,11 +284,9 @@ const Dashboard = () => {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={attendanceData}
-                                margin={
-                                    windowWidth < 640
-                                        ? { top: 20, right: 10, left: -8, bottom: 20 }
-                                        : { top: 20, right: 30, left: 20, bottom: 5 }
-                                }
+                                margin={{
+                                    top: 20, right: 30, left: 20, bottom: 5
+                                }}
                                 barSize={windowWidth < 640 ? 15 : 20}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
@@ -256,3 +330,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
