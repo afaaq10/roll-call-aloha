@@ -54,7 +54,9 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
         let totalStudentsCount = 0;
         let totalPresentCount = 0;
 
-        for (let i = 1; i <= 8; i++) {
+        const maxLevel = selectedProgram === 'tiny_tots' ? 10 : 8;
+
+        for (let i = 1; i <= maxLevel; i++) {
             classAttendance[i] = {
                 totalStudents: 0,
                 presentCount: 0,
@@ -65,7 +67,7 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
 
         students.forEach(student => {
             const studentClass = parseInt(student.class);
-            if (!studentClass || studentClass < 1 || studentClass > 8) return;
+            if (!studentClass || studentClass < 1 || studentClass > maxLevel) return;
 
             classAttendance[studentClass].totalStudents++;
             totalStudentsCount++;

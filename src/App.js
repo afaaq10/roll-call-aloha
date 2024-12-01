@@ -265,6 +265,7 @@ const App = () => {
                                     <table className="w-full bg-white border-collapse">
                                         <thead>
                                             <tr className="border-b">
+                                                <td className="p-4">Id</td>
                                                 <th className="p-4 font-semibold text-left">Name</th>
                                                 <th className="p-4 font-semibold text-left">Level</th>
                                                 <th className="p-4 font-semibold text-left">Phone</th>
@@ -272,8 +273,9 @@ const App = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {students.map((student) => (
+                                            {students.map((student, index) => (
                                                 <tr key={student.id} className="border-b hover:bg-gray-50">
+                                                    <td className="p-4">{index + 1}</td>
                                                     <td className="p-4">{student.name}</td>
                                                     <td className="p-4">{student.class}</td>
                                                     <td className="p-4">{student.phone}</td>
