@@ -17,7 +17,7 @@ import Login from './components/Login';
 
 const App = () => {
     const [students, setStudents] = useState([]);
-    const [newStudent, setNewStudent] = useState({ name: '', class: '', phone: '' });
+    const [newStudent, setNewStudent] = useState({ name: '', class: '', phone: '', code: '3029/' });
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
@@ -36,7 +36,7 @@ const App = () => {
     useEffect(() => {
         const storedAuthStatus = localStorage.getItem('isAuthenticated');
         if (storedAuthStatus === 'true') {
-            setIsAuthenticated(true);  // User is authenticated
+            setIsAuthenticated(true);
         }
     }, []);
 
@@ -58,7 +58,7 @@ const App = () => {
     }, [selectedProgram]);
 
     const addStudent = () => {
-        if (!newStudent.name || !newStudent.class || !newStudent.phone) {
+        if (!newStudent.name || !newStudent.class || !newStudent.phone || !newStudent.code) {
             setAlertMessage('Please fill in all fields');
             setShowAlert(true);
             return;
@@ -67,7 +67,7 @@ const App = () => {
         const student = { id: Date.now().toString(), ...newStudent, attendance: [] };
         setStudents([...students, student]);
         addStudentToDatabase(selectedProgram, student);
-        setNewStudent({ name: '', class: '', phone: '' });
+        setNewStudent({ name: '', class: '', phone: '', code: '3029/', });
         setAlertMessage('Student added successfully');
         setShowAlert(true);
     };
@@ -78,6 +78,7 @@ const App = () => {
             name: student.name,
             class: student.class,
             phone: student.phone,
+            code: student.code || '3029/',
         });
     };
 
@@ -247,6 +248,19 @@ const App = () => {
                                         className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <input
+                                        type="text"
+                                        placeholder="Student Code"
+                                        value={newStudent.code}
+                                        onChange={(e) => {
+                                            let value = e.target.value;
+                                            if (!value.startsWith('3029/')) {
+                                                value = '3029/';
+                                            }
+                                            setNewStudent({ ...newStudent, code: value });
+                                        }}
+                                        className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <input
                                         type="number"
                                         placeholder="Phone Number"
                                         value={newStudent.phone}
@@ -268,6 +282,7 @@ const App = () => {
                                                 <td className="p-4">Id</td>
                                                 <th className="p-4 font-semibold text-left">Name</th>
                                                 <th className="p-4 font-semibold text-left">Level</th>
+                                                <th className="p-4 font-semibold text-left">Code</th>
                                                 <th className="p-4 font-semibold text-left">Phone</th>
                                                 <th className="p-4 font-semibold text-left">Actions</th>
                                             </tr>
@@ -278,6 +293,7 @@ const App = () => {
                                                     <td className="p-4">{index + 1}</td>
                                                     <td className="p-4">{student.name}</td>
                                                     <td className="p-4">{student.class}</td>
+                                                    <td className="p-4">{student.code}</td>
                                                     <td className="p-4">{student.phone}</td>
                                                     <td className="flex gap-4 p-4">
                                                         <button
