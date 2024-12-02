@@ -223,7 +223,7 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                     </div>
                 </div>
 
-                {isModalOpen && (
+                {/* {isModalOpen && (
                     <div
                         className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 modal-overlay"
                         onClick={handleOutsideClick}
@@ -256,8 +256,51 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                             </table>
                         </div>
                     </div>
-                )}
+                )} */}
 
+                {isModalOpen && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 modal-overlay"
+                        onClick={handleOutsideClick}
+                    >
+                        <div className="bg-white rounded-lg shadow-lg w-[90%] max-w-[900px] p-6 relative max-h-[80vh] my-8">
+                            <button
+                                onClick={toggleModal}
+                                className="absolute p-2 text-gray-500 top-2 right-2 hover:text-gray-700"
+                            >
+                                <span className="sr-only">Close</span> ×
+                            </button>
+                            <h2 className="mb-4 text-lg font-semibold text-gray-800">Student Attendance List</h2>
+                            <div className="overflow-y-auto max-h-[calc(80vh-8rem)]">
+                                <table className="w-full text-left border-collapse table-auto">
+                                    <thead className="sticky top-0 bg-white">
+                                        <tr>
+                                            <th className="px-4 py-2 font-semibold text-gray-600">Name</th>
+                                            <th className="px-4 py-2 font-semibold text-gray-600">Level</th>
+                                            <th className="px-4 py-2 font-semibold text-gray-600">Attendance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {attendanceList.map((student, index) => (
+                                            <tr key={index} className="border-b hover:bg-gray-50">
+                                                <td className="px-4 py-2">{student.name}</td>
+                                                <td className="px-4 py-2">{student.class}</td>
+                                                <td className="px-4 py-2">
+                                                    <span className={`px-2 py-1 text-sm rounded-full ${student.status === 'present'
+                                                        ? 'bg-green-200 text-green-800'
+                                                        : 'bg-red-100 text-red-800'
+                                                        }`}>
+                                                        {student.status}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 <div className="grid gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-3">
                     <StatsCard
                         title="Total Students"
