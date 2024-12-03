@@ -28,6 +28,8 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
     const [totalStudents, setTotalStudents] = useState(0);
     const [totalPresent, setTotalPresent] = useState(0);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [selectedDate, setSelectedDate] = useState(null);
+
 
     const [attendanceList, setAttendanceList] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -115,23 +117,42 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
         setAttendanceData(data);
     };
 
+    // const getAttendanceList = () => {
+    //     const attendanceDetails = students.map(student => {
+    //         const attendance = student.attendance || [];
+    //         const currentMonthAttendance = attendance.filter(record => {
+    //             const recordDate = new Date(record.date);
+    //             return recordDate.getMonth() === currentMonth.getMonth() && recordDate.getFullYear() === currentMonth.getFullYear();
+    //         });
+
+    //         const currentMonthStatus = currentMonthAttendance.length > 0 ? currentMonthAttendance[currentMonthAttendance.length - 1].status : 'absent';
+    //         return {
+    //             name: student.name,
+    //             class: student.class,
+    //             status: currentMonthStatus
+    //         };
+    //     });
+    //     setAttendanceList(attendanceDetails);
+    // };
+
     const getAttendanceList = () => {
         const attendanceDetails = students.map(student => {
             const attendance = student.attendance || [];
-            const currentMonthAttendance = attendance.filter(record => {
+            const selectedDateAttendance = attendance.filter(record => {
                 const recordDate = new Date(record.date);
-                return recordDate.getMonth() === currentMonth.getMonth() && recordDate.getFullYear() === currentMonth.getFullYear();
+                return selectedDate && recordDate.toDateString() === new Date(selectedDate).toDateString();
             });
 
-            const currentMonthStatus = currentMonthAttendance.length > 0 ? currentMonthAttendance[currentMonthAttendance.length - 1].status : 'absent';
+            const status = selectedDateAttendance.length > 0 ? selectedDateAttendance[selectedDateAttendance.length - 1].status : 'No data';
             return {
                 name: student.name,
                 class: student.class,
-                status: currentMonthStatus
+                status: status
             };
         });
         setAttendanceList(attendanceDetails);
     };
+
 
     const nextMonth = () => {
         setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)));
@@ -146,7 +167,7 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
             getMonthAttendance();
             getAttendanceList();
         }
-    }, [currentMonth, students]);
+    }, [currentMonth, students, selectedDate]);
 
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
@@ -186,6 +207,11 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
             setIsModalOpen(false);
         }
     };
+
+    const handleDateChange = (e) => {
+        setSelectedDate(e.target.value);
+    };
+
 
     return (
         <div className="min-h-screen p-4 bg-gray-50 lg:p-8">
@@ -271,6 +297,14 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                                 <span className="sr-only">Close</span> ×
                             </button>
                             <h2 className="mb-4 text-lg font-semibold text-gray-800">Student Attendance List</h2>
+                            <div className="flex justify-end mb-4">
+                                <input
+                                    type="date"
+                                    value={selectedDate || ''}
+                                    onChange={handleDateChange}
+                                    className="p-2 border rounded-md"
+                                />
+                            </div>
                             <div className="overflow-y-auto max-h-[calc(80vh-8rem)]">
                                 <table className="w-full text-left border-collapse table-auto">
                                     <thead className="sticky top-0 bg-white">
