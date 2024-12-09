@@ -29,7 +29,7 @@ const Login = ({ onLogin }) => {
     return (
         <div className="flex items-center justify-center min-h-screen p-6">
             <div className="w-full max-w-sm p-8 bg-white border border-gray-100 shadow-2xl rounded-xl">
-                <h2 className="mb-8 text-2xl font-semibold text-center text-gray-900">Aloha Attendance</h2>
+                <h2 className="mb-8 text-2xl font-semibold text-center text-gray-900">ALOHA ATTENDANCE</h2>
                 <form onSubmit={handleLogin}>
                     <div className="mb-6">
                         <label className="block mb-2 text-sm font-medium text-gray-600">Username</label>
