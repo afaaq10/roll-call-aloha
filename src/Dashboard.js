@@ -117,24 +117,6 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
         setAttendanceData(data);
     };
 
-    // const getAttendanceList = () => {
-    //     const attendanceDetails = students.map(student => {
-    //         const attendance = student.attendance || [];
-    //         const currentMonthAttendance = attendance.filter(record => {
-    //             const recordDate = new Date(record.date);
-    //             return recordDate.getMonth() === currentMonth.getMonth() && recordDate.getFullYear() === currentMonth.getFullYear();
-    //         });
-
-    //         const currentMonthStatus = currentMonthAttendance.length > 0 ? currentMonthAttendance[currentMonthAttendance.length - 1].status : 'absent';
-    //         return {
-    //             name: student.name,
-    //             class: student.class,
-    //             status: currentMonthStatus
-    //         };
-    //     });
-    //     setAttendanceList(attendanceDetails);
-    // };
-
     const getAttendanceList = () => {
         const attendanceDetails = students.map(student => {
             const attendance = student.attendance || [];
@@ -248,41 +230,6 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                         </button>
                     </div>
                 </div>
-
-                {/* {isModalOpen && (
-                    <div
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 modal-overlay"
-                        onClick={handleOutsideClick}
-                    >
-                        <div className="bg-white rounded-lg shadow-lg w-[23rem] sm:w-96 md:w-[700px] p-6 relative">
-                            <button
-                                onClick={toggleModal}
-                                className="absolute p-2 text-gray-500 top-2 right-2 hover:text-gray-700"
-                            >
-                                <span className="sr-only">Close</span> ×
-                            </button>
-                            <h2 className="mb-4 text-lg font-semibold text-gray-800">Student Attendance List</h2>
-                            <table className="w-full text-left border-collapse table-auto">
-                                <thead>
-                                    <tr>
-                                        <th className="px-4 py-2 font-semibold text-gray-600">Name</th>
-                                        <th className="px-4 py-2 font-semibold text-gray-600">Level</th>
-                                        <th className="px-4 py-2 font-semibold text-gray-600">Attendance</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {attendanceList.map((student, index) => (
-                                        <tr key={index} className="border-b hover:bg-gray-50">
-                                            <td className="px-4 py-2">{student.name}</td>
-                                            <td className="px-4 py-2">{student.class}</td>
-                                            <td className="px-4 py-2">{student.status}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                )} */}
 
                 {isModalOpen && (
                     <div
