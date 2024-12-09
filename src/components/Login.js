@@ -5,15 +5,15 @@
  * @project: Roll-Call Aloha
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAdmin } from './../firebase';
 
 const Login = ({ onLogin }) => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [username, setUsername] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const [error, setError] = React.useState("");
 
     const handleLogin = async (e) => {
         e.preventDefault();
