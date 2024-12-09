@@ -5,14 +5,14 @@
  * @project: Roll-Call Aloha
  */
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 
 const Navbar = ({ toggleMenu, menuOpen, setMenuOpen, selectedProgram, handleLogout }) => {
-    const modalRef = useRef();
+    const modalRef = React.useRef();
 
-    useEffect(() => {
+    React.useEffect(() => {
         const handleClickOutside = (event) => {
             if (modalRef.current && !modalRef.current.contains(event.target)) {
                 setMenuOpen(false);
