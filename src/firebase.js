@@ -47,6 +47,7 @@ export const logoutAdmin = async () => {
 };
 
 export const addStudentToDatabase = (program, student) => {
+    // Note to self: This (ref) will point to that location where the data will be stored
     const studentRef = ref(db, `students/${program}/${student.id}`);
     set(studentRef, student);
 };
