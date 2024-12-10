@@ -5,15 +5,15 @@
  * @project: Roll-Call Aloha
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Check, X } from 'lucide-react';
 import { markAttendanceForStudent, fetchStudents } from '../firebase';
 
 const TakeAttendance = ({ selectedProgram }) => {
-    const [students, setStudents] = useState([]);
+    const [students, setStudents] = React.useState([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         console.log("Selected Program:", selectedProgram);
         const getStudents = async () => {
             const studentsData = await fetchStudents(selectedProgram);
