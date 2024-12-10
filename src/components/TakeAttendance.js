@@ -95,7 +95,9 @@ const TakeAttendance = ({ selectedProgram }) => {
                                     >
                                         <X size={16} /> Absent
                                     </button>
+
                                 </div>
+                                <div className="flex justify-end text-sm font-normal text-gray-600">Timing: {student.timing}</div>
                             </div>
                         );
                     })

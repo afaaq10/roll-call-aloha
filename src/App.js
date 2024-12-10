@@ -15,9 +15,15 @@ import { addStudentToDatabase, deleteStudentFromDatabase, fetchStudents, markAtt
 import Dashboard from './Dashboard';
 import Login from './components/Login';
 
+const TIMING_SLOTS = [
+    { value: '10am-12pm', label: '10am - 12pm' },
+    { value: '12pm-2pm', label: '12pm - 2pm' },
+    { value: '2pm-4pm', label: '2pm - 4pm' }
+];
+
 const App = () => {
     const [students, setStudents] = useState([]);
-    const [newStudent, setNewStudent] = useState({ name: '', class: '', phone: '', code: '3029/' });
+    const [newStudent, setNewStudent] = useState({ name: '', class: '', phone: '', code: '3029/', timing: '' });
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
@@ -58,7 +64,7 @@ const App = () => {
     }, [selectedProgram]);
 
     const addStudent = () => {
-        if (!newStudent.name || !newStudent.class || !newStudent.phone || !newStudent.code) {
+        if (!newStudent.name || !newStudent.class || !newStudent.phone || !newStudent.code || !newStudent.timing) {
             setAlertMessage('Please fill in all fields');
             setShowAlert(true);
             return;
@@ -67,7 +73,7 @@ const App = () => {
         const student = { id: Date.now().toString(), ...newStudent, attendance: [] };
         setStudents([...students, student]);
         addStudentToDatabase(selectedProgram, student);
-        setNewStudent({ name: '', class: '', phone: '', code: '3029/', });
+        setNewStudent({ name: '', class: '', phone: '', code: '3029/', timing: '' });
         setAlertMessage('Student added successfully');
         setShowAlert(true);
     };
@@ -79,11 +85,12 @@ const App = () => {
             class: student.class,
             phone: student.phone,
             code: student.code || '3029/',
+            timing: student.timing || ''
         });
     };
 
     const handleSaveEdit = () => {
-        if (!newStudent.name || !newStudent.class || !newStudent.phone) {
+        if (!newStudent.name || !newStudent.class || !newStudent.phone || !newStudent.timing) {
             setAlertMessage('Please fill in all fields');
             setShowAlert(true);
             return;
@@ -98,7 +105,7 @@ const App = () => {
         setAlertMessage('Student details updated successfully');
         setShowAlert(true);
         setStudentToEdit(null);
-        setNewStudent({ name: '', class: '', phone: '' });
+        setNewStudent({ name: '', class: '', phone: '', timing: '' });
     };
 
     const deleteStudent = (id) => {
@@ -267,6 +274,18 @@ const App = () => {
                                         onChange={(e) => setNewStudent({ ...newStudent, phone: e.target.value })}
                                         className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
+                                    <select
+                                        value={newStudent.timing}
+                                        onChange={(e) => setNewStudent({ ...newStudent, timing: e.target.value })}
+                                        className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select Timing Slot</option>
+                                        {TIMING_SLOTS.map((slot) => (
+                                            <option key={slot.value} value={slot.value}>
+                                                {slot.label}
+                                            </option>
+                                        ))}
+                                    </select>
                                     <button
                                         onClick={studentToEdit ? handleSaveEdit : addStudent}
                                         className="p-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
@@ -284,6 +303,7 @@ const App = () => {
                                                 <th className="p-4 font-semibold text-left">Level</th>
                                                 <th className="p-4 font-semibold text-left">Code</th>
                                                 <th className="p-4 font-semibold text-left">Phone</th>
+                                                <th className="p-4 font-semibold text-left">Timing</th>
                                                 <th className="p-4 font-semibold text-left">Actions</th>
                                             </tr>
                                         </thead>
@@ -295,6 +315,7 @@ const App = () => {
                                                     <td className="p-4">{student.class}</td>
                                                     <td className="p-4">{student.code}</td>
                                                     <td className="p-4">{student.phone}</td>
+                                                    <td className="p-4">{student.timing}</td>
                                                     <td className="flex gap-4 p-4">
                                                         <button
                                                             className="p-2 text-white bg-gray-500 rounded-lg hover:bg-gray-700"
