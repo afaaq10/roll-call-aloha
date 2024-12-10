@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Calendar, ChevronLeft, ChevronRight, Users, CalendarDays, ArrowLeft, Eye } from 'lucide-react';
+import { Calendar, Users, CalendarDays, ArrowLeft, Eye } from 'lucide-react';
 import { fetchStudents } from './firebase';
 import { Link } from 'react-router-dom';
 
@@ -22,16 +22,14 @@ const StatsCard = ({ title, value, icon: Icon, valueColor = "text-gray-900" }) =
 );
 
 const Dashboard = ({ selectedProgram, onProgramChange }) => {
-    const [currentMonth, setCurrentMonth] = React.useState(new Date());
     const [students, setStudents] = React.useState([]);
     const [attendanceData, setAttendanceData] = React.useState([]);
+    const [attendanceList, setAttendanceList] = React.useState([]);
     const [totalStudents, setTotalStudents] = React.useState(0);
     const [totalPresent, setTotalPresent] = React.useState(0);
+    const [totalAbsent, setTotalAbsent] = React.useState(0);
     const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
-    const [selectedDate, setSelectedDate] = React.useState(null);
-
-
-    const [attendanceList, setAttendanceList] = React.useState([]);
+    const [selectedDate, setSelectedDate] = React.useState(new Date().toISOString().split('T')[0]);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
 
     React.useEffect(() => {
@@ -48,22 +46,19 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
         fetchData();
     }, [selectedProgram]);
 
-    const getMonthAttendance = () => {
-        const year = currentMonth.getFullYear();
-        const month = currentMonth.getMonth();
-
-        const classAttendance = {};
+    const getDailyAttendance = () => {
         let totalStudentsCount = 0;
         let totalPresentCount = 0;
+        let totalAbsentCount = 0;
 
         const maxLevel = selectedProgram === 'tiny_tots' ? 10 : 8;
+        const classAttendance = {};
 
         for (let i = 1; i <= maxLevel; i++) {
             classAttendance[i] = {
                 totalStudents: 0,
                 presentCount: 0,
-                absentCount: 0,
-                daysWithRecords: new Set()
+                absentCount: 0
             };
         }
 
@@ -75,33 +70,32 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
             totalStudentsCount++;
 
             const attendance = student.attendance || [];
-            attendance.forEach(record => {
-                const recordDate = new Date(record.date);
-                if (recordDate.getMonth() === month && recordDate.getFullYear() === year) {
-                    classAttendance[studentClass].daysWithRecords.add(record.date);
-                    if (record.status === 'present') {
-                        classAttendance[studentClass].presentCount++;
-                        totalPresentCount++;
-                    } else if (record.status === 'absent') {
-                        classAttendance[studentClass].absentCount++;
-                    }
+            const todayAttendance = attendance.find(record =>
+                new Date(record.date).toISOString().split('T')[0] === selectedDate
+            );
+
+            if (todayAttendance) {
+                if (todayAttendance.status === 'present') {
+                    classAttendance[studentClass].presentCount++;
+                    totalPresentCount++;
+                } else if (todayAttendance.status === 'absent') {
+                    classAttendance[studentClass].absentCount++;
+                    totalAbsentCount++;
                 }
-            });
+            }
         });
 
         setTotalStudents(totalStudentsCount);
         setTotalPresent(totalPresentCount);
+        setTotalAbsent(totalAbsentCount);
 
         const data = Object.entries(classAttendance).map(([classLevel, stats]) => {
-            const totalRecords = stats.presentCount + stats.absentCount;
-            const daysInMonth = stats.daysWithRecords.size;
-
-            const presentPercentage = totalRecords > 0
-                ? Math.round((stats.presentCount / totalRecords) * 100)
+            const presentPercentage = stats.totalStudents > 0
+                ? Math.round((stats.presentCount / stats.totalStudents) * 100)
                 : 0;
 
-            const absentPercentage = totalRecords > 0
-                ? Math.round((stats.absentCount / totalRecords) * 100)
+            const absentPercentage = stats.totalStudents > 0
+                ? Math.round((stats.absentCount / stats.totalStudents) * 100)
                 : 0;
 
             return {
@@ -110,7 +104,8 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                 present: presentPercentage,
                 absent: absentPercentage,
                 totalStudents: stats.totalStudents,
-                daysWithRecords: daysInMonth
+                presentCount: stats.presentCount,
+                absentCount: stats.absentCount
             };
         });
 
@@ -122,34 +117,43 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
             const attendance = student.attendance || [];
             const selectedDateAttendance = attendance.filter(record => {
                 const recordDate = new Date(record.date);
-                return selectedDate && recordDate.toDateString() === new Date(selectedDate).toDateString();
+                return recordDate.toISOString().split('T')[0] === selectedDate;
             });
 
-            const status = selectedDateAttendance.length > 0 ? selectedDateAttendance[selectedDateAttendance.length - 1].status : 'No data';
+            const status = selectedDateAttendance.length > 0
+                ? selectedDateAttendance[selectedDateAttendance.length - 1].status
+                : 'No data';
+
             return {
                 name: student.name,
                 class: student.class,
                 status: status
             };
         });
+
         setAttendanceList(attendanceDetails);
     };
 
-
-    const nextMonth = () => {
-        setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)));
+    const toggleModal = () => {
+        setIsModalOpen(!isModalOpen);
     };
 
-    const prevMonth = () => {
-        setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)));
+    const handleOutsideClick = (e) => {
+        if (e.target.classList.contains('modal-overlay')) {
+            setIsModalOpen(false);
+        }
+    };
+
+    const handleDateChange = (e) => {
+        setSelectedDate(e.target.value);
     };
 
     React.useEffect(() => {
         if (students.length > 0) {
-            getMonthAttendance();
+            getDailyAttendance();
             getAttendanceList();
         }
-    }, [currentMonth, students, selectedDate]);
+    }, [selectedDate, students]);
 
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
@@ -158,10 +162,9 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                 <div className="p-3 bg-white border rounded-lg shadow-lg">
                     <p className="text-sm font-bold text-gray-800">{data.fullName}</p>
                     <div className="mt-2 space-y-1">
-                        <p className="text-sm text-emerald-600">Present: {data.present}%</p>
-                        <p className="text-sm text-red-600">Absent: {data.absent}%</p>
-                        <p className="text-sm text-gray-600">Students: {data.totalStudents}</p>
-                        <p className="text-sm text-gray-600">Days: {data.daysWithRecords}</p>
+                        <p className="text-sm text-emerald-600">Present: {data.present}% ({data.presentCount})</p>
+                        <p className="text-sm text-red-600">Absent: {data.absent}% ({data.absentCount})</p>
+                        <p className="text-sm text-gray-600">Total Students: {data.totalStudents}</p>
                     </div>
                 </div>
             );
@@ -179,21 +182,6 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
             ))}
         </div>
     );
-
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
-    };
-
-    const handleOutsideClick = (e) => {
-        if (e.target.classList.contains('modal-overlay')) {
-            setIsModalOpen(false);
-        }
-    };
-
-    const handleDateChange = (e) => {
-        setSelectedDate(e.target.value);
-    };
-
 
     return (
         <div className="min-h-screen p-4 bg-gray-50 lg:p-8">
@@ -213,21 +201,12 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                     <h1 className="text-xl font-bold text-center text-gray-800 md:text-left lg:text-2xl">Attendance Dashboard</h1>
 
                     <div className="flex items-center justify-center space-x-2 md:justify-end sm:space-x-4">
-                        <button
-                            onClick={prevMonth}
-                            className="p-2 text-gray-600 transition-all bg-white rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900"
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
-                        <span className="text-sm font-medium text-gray-700 sm:text-base">
-                            {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                        </span>
-                        <button
-                            onClick={nextMonth}
-                            className="p-2 text-gray-600 transition-all bg-white rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900"
-                        >
-                            <ChevronRight size={20} />
-                        </button>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={handleDateChange}
+                            className="p-2 border rounded-md"
+                        />
                     </div>
                 </div>
 
@@ -247,7 +226,7 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                             <div className="flex justify-end mb-4">
                                 <input
                                     type="date"
-                                    value={selectedDate || ''}
+                                    value={selectedDate}
                                     onChange={handleDateChange}
                                     className="p-2 border rounded-md"
                                 />
@@ -282,17 +261,23 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
                         </div>
                     </div>
                 )}
-                <div className="grid gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-3">
-                    <StatsCard
-                        title="Total Students"
-                        value={totalStudents}
-                        icon={Users}
-                    />
+                <div className="grid gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-2">
                     <StatsCard
                         title="Present Today"
                         value={totalPresent}
                         icon={CalendarDays}
                         valueColor="text-emerald-600"
+                    />
+                    <StatsCard
+                        title="Absent Today"
+                        value={totalAbsent}
+                        icon={Calendar}
+                        valueColor="text-red-600"
+                    />
+                    <StatsCard
+                        title="Total Students"
+                        value={totalStudents}
+                        icon={Users}
                     />
                     <StatsCard
                         title="Attendance Rate"
@@ -354,5 +339,3 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
 };
 
 export default Dashboard;
-
-
