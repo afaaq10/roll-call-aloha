@@ -279,7 +279,7 @@ const App = () => {
                                     <table className="w-full bg-white border-collapse">
                                         <thead>
                                             <tr className="border-b">
-                                                <td className="p-4">Id</td>
+                                                <td className="p-4">SNo</td>
                                                 <th className="p-4 font-semibold text-left">Name</th>
                                                 <th className="p-4 font-semibold text-left">Level</th>
                                                 <th className="p-4 font-semibold text-left">Code</th>

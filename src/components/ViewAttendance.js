@@ -5,20 +5,20 @@
  * @project: Roll-Call Aloha
  */
 
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Calendar } from 'lucide-react';
-import { format, parse, isValid } from 'date-fns';
-import { ArrowLeft } from 'lucide-react';
+import React from 'react';
 import { fetchStudents } from '../firebase';
+import { Link } from 'react-router-dom';
+import { format, parse, isValid } from 'date-fns';
+import { Search, Calendar } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 const ViewAttendance = ({ selectedProgram }) => {
-    const [students, setStudents] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedDate, setSelectedDate] = useState('');
-    const [openAccordion, setOpenAccordion] = useState(null);
+    const [students, setStudents] = React.useState([]);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [selectedDate, setSelectedDate] = React.useState('');
+    const [openAccordion, setOpenAccordion] = React.useState(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         console.log("Selected Program:", selectedProgram);
         const fetchData = async () => {
             const studentsData = await fetchStudents(selectedProgram);
