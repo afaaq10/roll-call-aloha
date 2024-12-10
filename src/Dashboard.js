@@ -5,7 +5,7 @@
  * @project: Roll-Call Aloha
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Calendar, ChevronLeft, ChevronRight, Users, CalendarDays, ArrowLeft, Eye } from 'lucide-react';
 import { fetchStudents } from './firebase';
@@ -22,25 +22,25 @@ const StatsCard = ({ title, value, icon: Icon, valueColor = "text-gray-900" }) =
 );
 
 const Dashboard = ({ selectedProgram, onProgramChange }) => {
-    const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [students, setStudents] = useState([]);
-    const [attendanceData, setAttendanceData] = useState([]);
-    const [totalStudents, setTotalStudents] = useState(0);
-    const [totalPresent, setTotalPresent] = useState(0);
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [currentMonth, setCurrentMonth] = React.useState(new Date());
+    const [students, setStudents] = React.useState([]);
+    const [attendanceData, setAttendanceData] = React.useState([]);
+    const [totalStudents, setTotalStudents] = React.useState(0);
+    const [totalPresent, setTotalPresent] = React.useState(0);
+    const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+    const [selectedDate, setSelectedDate] = React.useState(null);
 
 
-    const [attendanceList, setAttendanceList] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [attendanceList, setAttendanceList] = React.useState([]);
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchData = async () => {
             const studentsData = await fetchStudents(selectedProgram);
             setStudents(studentsData);
@@ -144,7 +144,7 @@ const Dashboard = ({ selectedProgram, onProgramChange }) => {
         setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)));
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (students.length > 0) {
             getMonthAttendance();
             getAttendanceList();
