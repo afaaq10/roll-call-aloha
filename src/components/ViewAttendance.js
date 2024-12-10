@@ -19,7 +19,6 @@ const ViewAttendance = ({ selectedProgram }) => {
     const [openAccordion, setOpenAccordion] = React.useState(null);
 
     React.useEffect(() => {
-        console.log("Selected Program:", selectedProgram);
         const fetchData = async () => {
             const studentsData = await fetchStudents(selectedProgram);
             setStudents(studentsData);
