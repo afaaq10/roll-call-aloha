@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, Check, X } from 'lucide-react';
 import { markAttendanceForStudent, fetchStudents } from '../firebase';
 
@@ -38,9 +38,6 @@ const TakeAttendance = ({ selectedProgram }) => {
         setStudents(updatedStudentsData);
     };
 
-    console.log("Current URL:", window.location.href);
-
-    console.log("useParams output:", useParams());
     return (
         <div className="p-6">
             <Link to="/" className="flex items-center mb-4 text-lg text-blue-600">
@@ -72,7 +69,6 @@ const TakeAttendance = ({ selectedProgram }) => {
                                 key={student.id}
                                 className={`md:w-[28rem] shadow-md rounded-lg p-3 flex flex-col gap-4 border ${cardBgColor} ${textColor}`}
                             >
-                                {/* <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"> */}
                                 <div className="flex flex-row justify-between">
                                     <h3 className="text-xl font-medium">{student.name}</h3>
                                     <p className="font-semibold text-gray-600">Level: {student.class}</p>
@@ -85,10 +81,7 @@ const TakeAttendance = ({ selectedProgram }) => {
                                             </span>
                                         </div>
                                     )}
-                                    {/* <p className="text-gray-600">Phone: {student.phone}</p> */}
                                 </div>
-                                {/* </div> */}
-
                                 <div className="flex gap-4 mt-4">
                                     <button
                                         onClick={() => markAttendance(student.id, 'present')}
