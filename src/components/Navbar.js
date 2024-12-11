@@ -27,7 +27,7 @@ const Navbar = ({ toggleMenu, menuOpen, setMenuOpen, selectedProgram, handleLogo
 
     return (
         <div className="relative flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold font-cooper">ALOHA ATTENDANCE</h1>
+            <h1 className="text-2xl font-bold">ALOHA ATTENDANCE</h1>
             <button onClick={toggleMenu} className="text-xl">
                 <MoreHorizontal />
             </button>

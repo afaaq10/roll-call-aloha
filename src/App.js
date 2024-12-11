@@ -14,6 +14,7 @@ import { Edit2, Trash2 } from 'lucide-react';
 import { addStudentToDatabase, deleteStudentFromDatabase, fetchStudents, markAttendanceForStudent } from './firebase';
 import Dashboard from './Dashboard';
 import Login from './components/Login';
+import './App.css';
 
 const TIMING_SLOTS = [
     { value: '10am-12pm', label: '10am - 12pm' },
