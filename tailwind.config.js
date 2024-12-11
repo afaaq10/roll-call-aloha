@@ -4,7 +4,11 @@ module.exports = {
     './src/**/*.{html,js,jsx,ts,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        cooper: ['Cooper Black', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 }
