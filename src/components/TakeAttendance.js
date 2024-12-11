@@ -46,10 +46,10 @@ const TakeAttendance = ({ selectedProgram }) => {
         <div className="p-6">
             <div className="flex items-center justify-between mb-4">
                 <Link to="/" className="flex items-center text-lg text-blue-600">
-                    <ArrowLeft size={20} className="mr-2" />
+                    <ArrowLeft size={20} className="mb-4 mr-2" />
                 </Link>
             </div>
-            <h2 className="mb-6 text-2xl font-semibold text-center md:text-left">Take Attendance</h2>
+            <h2 className="mb-8 text-2xl font-semibold text-center md:text-left">Take Attendance</h2>
             <div className="flex items-center w-full mb-4 space-x-2 md:w-auto">
                 <Search size={18} className="text-gray-500" />
                 <input
@@ -60,7 +60,7 @@ const TakeAttendance = ({ selectedProgram }) => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
             </div>
-            <div className="space-y-3">
+            <div className="mt-10 space-y-3">
                 {students.length === 0 ? (
                     <p>No students found for the selected program.</p>
                 ) : (
