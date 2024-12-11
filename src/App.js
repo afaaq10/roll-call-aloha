@@ -175,22 +175,24 @@ const App = () => {
                     </div>
                 )}
 
-                {loading && <Loading />}
+                {/* {} */}
 
-                {isAuthenticated && <div className="flex justify-end gap-2 mb-4">
-                    <button
-                        className={`px-4 py-2 text-white rounded-md ${selectedProgram === 'tiny_tots' ? 'bg-blue-600' : 'bg-gray-300'}`}
-                        onClick={() => handleProgramChange('tiny_tots')}
-                    >
-                        Tiny Tots
-                    </button>
-                    <button
-                        className={`px-4 py-2 text-white rounded-md ${selectedProgram === 'mental_arithmetic' ? 'bg-blue-600' : 'bg-gray-300'}`}
-                        onClick={() => handleProgramChange('mental_arithmetic')}
-                    >
-                        Mental Arithmetic
-                    </button>
-                </div>
+                {isAuthenticated &&
+                    loading ? <Loading /> : (
+                    <div className="flex justify-end gap-2 mb-4">
+                        <button
+                            className={`px-4 py-2 text-white rounded-md ${selectedProgram === 'tiny_tots' ? 'bg-blue-600' : 'bg-gray-300'}`}
+                            onClick={() => handleProgramChange('tiny_tots')}
+                        >
+                            Tiny Tots
+                        </button>
+                        <button
+                            className={`px-4 py-2 text-white rounded-md ${selectedProgram === 'mental_arithmetic' ? 'bg-blue-600' : 'bg-gray-300'}`}
+                            onClick={() => handleProgramChange('mental_arithmetic')}
+                        >
+                            Mental Arithmetic
+                        </button>
+                    </div>)
                 }
                 {showDeleteModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50">
