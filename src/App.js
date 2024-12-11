@@ -55,6 +55,7 @@ const App = () => {
 
     const handleLogin = () => {
         setIsAuthenticated(true);
+        setMenuOpen(false);
         localStorage.setItem('isAuthenticated', 'true');
     };
 
