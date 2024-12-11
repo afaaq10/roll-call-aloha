@@ -35,7 +35,7 @@ const App = () => {
     const [studentToEdit, setStudentToEdit] = useState(null);
     const modalRef = useRef(null);
 
-    const [selectedProgram, setSelectedProgram] = useState('tiny_tots');
+    const [selectedProgram, setSelectedProgram] = useState('mental_arithmetic');
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
