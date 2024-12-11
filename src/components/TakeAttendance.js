@@ -12,12 +12,11 @@ import { markAttendanceForStudent, fetchStudents } from '../firebase';
 
 const TakeAttendance = ({ selectedProgram }) => {
     const [students, setStudents] = React.useState([]);
+    const [todayDate] = React.useState(new Date().toISOString().split('T')[0]);
 
     React.useEffect(() => {
-        console.log("Selected Program:", selectedProgram);
         const getStudents = async () => {
             const studentsData = await fetchStudents(selectedProgram);
-            console.log("Fetched Students:", studentsData);
             setStudents(studentsData);
         };
 
@@ -30,7 +29,7 @@ const TakeAttendance = ({ selectedProgram }) => {
 
     const markAttendance = async (studentId, status) => {
         const attendanceRecord = {
-            [new Date().toISOString().split('T')[0]]: status,
+            [todayDate]: status,
         };
         await markAttendanceForStudent(selectedProgram, studentId, attendanceRecord);
 
@@ -40,24 +39,28 @@ const TakeAttendance = ({ selectedProgram }) => {
 
     return (
         <div className="p-6">
-            <Link to="/" className="flex items-center mb-4 text-lg text-blue-600">
-                <ArrowLeft size={20} className="mr-2" />
-            </Link>
-
-            <h2 className="mb-6 text-2xl font-semibold">Take Attendance</h2>
-
+            <div className="flex items-center justify-between mb-4">
+                <Link to="/" className="flex items-center text-lg text-blue-600">
+                    <ArrowLeft size={20} className="mr-2" />
+                </Link>
+            </div>
+            <h2 className="mb-6 text-2xl font-semibold text-center md:text-left">Take Attendance</h2>
             <div className="space-y-3">
                 {students.length === 0 ? (
                     <p>No students found for the selected program.</p>
                 ) : (
                     students.map((student) => {
-                        const lastAttendance = student.attendance && student.attendance.length > 0
+                        const latestAttendance = student.attendance && student.attendance.length > 0
                             ? student.attendance.reduce((latest, record) => {
                                 return new Date(record.date) > new Date(latest.date) ? record : latest;
                             })
                             : null;
 
-                        const status = lastAttendance ? lastAttendance.status : null;
+                        const shouldShowLatestAttendance =
+                            latestAttendance &&
+                            latestAttendance.date === todayDate;
+
+                        const status = shouldShowLatestAttendance ? latestAttendance.status : null;
 
                         const isPresent = status === 'present';
 
@@ -72,7 +75,7 @@ const TakeAttendance = ({ selectedProgram }) => {
                                 <div className="flex flex-row justify-between">
                                     <h3 className="text-xl font-medium">{student.name}</h3>
                                     <p className="font-semibold text-gray-600">Level: {student.class}</p>
-                                    {lastAttendance && (
+                                    {status && (
                                         <div className="">
                                             <span
                                                 className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white ${isPresent ? 'bg-green-500' : 'bg-red-500'}`}
@@ -95,7 +98,6 @@ const TakeAttendance = ({ selectedProgram }) => {
                                     >
                                         <X size={16} /> Absent
                                     </button>
-
                                 </div>
                                 <div className="flex justify-end text-sm font-normal text-gray-600">Timing: {student.timing}</div>
                             </div>
