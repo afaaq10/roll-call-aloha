@@ -5,7 +5,7 @@
  * @project: Roll-Call Aloha
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { HashRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import TakeAttendance from './components/TakeAttendance';
 import ViewAttendance from './components/ViewAttendance';
@@ -24,25 +24,27 @@ const TIMING_SLOTS = [
 ];
 
 const App = () => {
-    const [students, setStudents] = useState([]);
-    const [newStudent, setNewStudent] = useState({ name: '', class: '', phone: '', code: '3029/', timing: '' });
+    const [students, setStudents] = React.useState([]);
+    const [newStudent, setNewStudent] = React.useState({ name: '', class: '', phone: '', code: '3029/', timing: '' });
 
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
+    const [showAlert, setShowAlert] = React.useState(false);
+    const [alertMessage, setAlertMessage] = React.useState('');
 
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [studentToDelete, setStudentToDelete] = useState(null);
+    const [menuOpen, setMenuOpen] = React.useState(false);
+    const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+    const [studentToDelete, setStudentToDelete] = React.useState(null);
 
-    const [studentToEdit, setStudentToEdit] = useState(null);
-    const modalRef = useRef(null);
+    const [studentToEdit, setStudentToEdit] = React.useState(null);
 
-    const [selectedProgram, setSelectedProgram] = useState('mental_arithmetic');
+    const modalRef = React.useRef(null);
+    const inputSectionRef = React.useRef(null);
 
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [selectedProgram, setSelectedProgram] = React.useState('mental_arithmetic');
 
-    useEffect(() => {
+    const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
+
+    React.useEffect(() => {
         const storedAuthStatus = localStorage.getItem('isAuthenticated');
         if (storedAuthStatus === 'true') {
             setIsAuthenticated(true);
@@ -59,7 +61,7 @@ const App = () => {
         localStorage.setItem('isAuthenticated', 'true');
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         setLoading(true);
         const fetchData = async () => {
             const studentsData = await fetchStudents(selectedProgram);
@@ -94,6 +96,10 @@ const App = () => {
             code: student.code || '3029/',
             timing: student.timing || ''
         });
+
+        if (inputSectionRef.current) {
+            inputSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
     };
 
     const handleSaveEdit = () => {
@@ -141,7 +147,7 @@ const App = () => {
 
     const toggleMenu = () => setMenuOpen(!menuOpen);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const handleClickOutside = (e) => {
             if (modalRef.current && !modalRef.current.contains(e.target)) {
                 setMenuOpen(false);
@@ -152,7 +158,7 @@ const App = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (showAlert) {
             const timer = setTimeout(() => setShowAlert(false), 3000);
             return () => clearTimeout(timer);
@@ -175,27 +181,6 @@ const App = () => {
                         <strong>{alertMessage}</strong>
                     </div>
                 )}
-
-                {/* {loading && <Loading />} */}
-
-                {/* {isAuthenticated && <div className="flex justify-end gap-2 mb-4">
-                    <button
-                        className={`px-4 py-2 text-white rounded-md ${selectedProgram === 'tiny_tots' ? 'bg-blue-600' : 'bg-gray-300'}`}
-                        onClick={() => handleProgramChange('tiny_tots')}
-                    >
-                        Tiny Tots
-                    </button>
-                    <button
-                        className={`px-4 py-2 text-white rounded-md ${selectedProgram === 'mental_arithmetic' ? 'bg-blue-600' : 'bg-gray-300'}`}
-                        onClick={() => handleProgramChange('mental_arithmetic')}
-                    >
-                        Mental Arithmetic
-                    </button>
-                </div>
-                } */}
-
-
-
                 {loading ? (
                     <div className="">
                         <Loading />  {/* This is your loading spinner */}
@@ -237,24 +222,11 @@ const App = () => {
                             </div>
                         </div>
                     )}
-
                     <Routes>
-                        {/* <Route path="/login" element={<Login onLogin={handleLogin} />} />
-                     */}
                         <Route
                             path="/login"
                             element={isAuthenticated ? <Navigate to="/" /> : <Login onLogin={handleLogin} />}
                         />
-                        {/* <Route
-                        path="/take-attendance/:selectedProgram"
-                        element={<TakeAttendance students={students} selectedProgram={selectedProgram} markAttendance={markAttendance} />}
-                    />
-                    <Route
-                        path="/view-attendance/:selectedProgram"
-                        element={<ViewAttendance students={students} selectedProgram={selectedProgram} />}
-                    />
-                    <Route path="/dashboard/:selectedProgram" element={<Dashboard selectedProgram={selectedProgram} onProgramChange={handleProgramChange} />} /> */}
-
                         <Route
                             path="/take-attendance/:selectedProgram"
                             element={isAuthenticated ? <TakeAttendance students={students} selectedProgram={selectedProgram} markAttendance={markAttendance} /> : <Navigate to="/login" />}
@@ -271,7 +243,7 @@ const App = () => {
                             path="/"
                             element={isAuthenticated ? (
                                 <>
-                                    <div className="flex flex-col gap-6 mb-6">
+                                    <div ref={inputSectionRef} className="flex flex-col gap-6 mb-6">
                                         <input
                                             type="text"
                                             placeholder="Student Name"
