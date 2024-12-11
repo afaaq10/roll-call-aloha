@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/roll-call-aloha/static/css/main.7aa055e8.css",
-    "main.js": "/roll-call-aloha/static/js/main.799bf9c7.js",
+    "main.css": "/roll-call-aloha/static/css/main.6fd26f12.css",
+    "main.js": "/roll-call-aloha/static/js/main.6680e7ab.js",
     "static/js/453.c650f281.chunk.js": "/roll-call-aloha/static/js/453.c650f281.chunk.js",
     "index.html": "/roll-call-aloha/index.html",
-    "main.7aa055e8.css.map": "/roll-call-aloha/static/css/main.7aa055e8.css.map",
-    "main.799bf9c7.js.map": "/roll-call-aloha/static/js/main.799bf9c7.js.map",
+    "main.6fd26f12.css.map": "/roll-call-aloha/static/css/main.6fd26f12.css.map",
+    "main.6680e7ab.js.map": "/roll-call-aloha/static/js/main.6680e7ab.js.map",
     "453.c650f281.chunk.js.map": "/roll-call-aloha/static/js/453.c650f281.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.7aa055e8.css",
-    "static/js/main.799bf9c7.js"
+    "static/css/main.6fd26f12.css",
+    "static/js/main.6680e7ab.js"
   ]
 }
