@@ -1,15 +1,16 @@
 {
   "files": {
-    "main.css": "/roll-call-aloha/static/css/main.6fd26f12.css",
-    "main.js": "/roll-call-aloha/static/js/main.6680e7ab.js",
+    "main.css": "/roll-call-aloha/static/css/main.8cc2d216.css",
+    "main.js": "/roll-call-aloha/static/js/main.9da8429e.js",
     "static/js/453.c650f281.chunk.js": "/roll-call-aloha/static/js/453.c650f281.chunk.js",
+    "static/media/COOPBL.TTF": "/roll-call-aloha/static/media/COOPBL.dbe0cbaa54b6ad6fa396.TTF",
     "index.html": "/roll-call-aloha/index.html",
-    "main.6fd26f12.css.map": "/roll-call-aloha/static/css/main.6fd26f12.css.map",
-    "main.6680e7ab.js.map": "/roll-call-aloha/static/js/main.6680e7ab.js.map",
+    "main.8cc2d216.css.map": "/roll-call-aloha/static/css/main.8cc2d216.css.map",
+    "main.9da8429e.js.map": "/roll-call-aloha/static/js/main.9da8429e.js.map",
     "453.c650f281.chunk.js.map": "/roll-call-aloha/static/js/453.c650f281.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.6fd26f12.css",
-    "static/js/main.6680e7ab.js"
+    "static/css/main.8cc2d216.css",
+    "static/js/main.9da8429e.js"
   ]
 }
