@@ -7,11 +7,12 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Check, X } from 'lucide-react';
+import { ArrowLeft, Check, Search, X } from 'lucide-react';
 import { markAttendanceForStudent, fetchStudents } from '../firebase';
 
 const TakeAttendance = ({ selectedProgram }) => {
     const [students, setStudents] = React.useState([]);
+    const [searchQuery, setSearchQuery] = React.useState('');
     const [todayDate] = React.useState(new Date().toISOString().split('T')[0]);
 
     React.useEffect(() => {
@@ -37,6 +38,10 @@ const TakeAttendance = ({ selectedProgram }) => {
         setStudents(updatedStudentsData);
     };
 
+    const filteredStudents = students.filter(student =>
+        student.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <div className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -45,11 +50,21 @@ const TakeAttendance = ({ selectedProgram }) => {
                 </Link>
             </div>
             <h2 className="mb-6 text-2xl font-semibold text-center md:text-left">Take Attendance</h2>
+            <div className="flex items-center w-full mb-4 space-x-2 md:w-auto">
+                <Search size={18} className="text-gray-500" />
+                <input
+                    type="text"
+                    placeholder="Search by student name"
+                    className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 sm:w-64"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
             <div className="space-y-3">
                 {students.length === 0 ? (
                     <p>No students found for the selected program.</p>
                 ) : (
-                    students.map((student) => {
+                    filteredStudents.map((student) => {
                         const latestAttendance = student.attendance && student.attendance.length > 0
                             ? student.attendance.reduce((latest, record) => {
                                 return new Date(record.date) > new Date(latest.date) ? record : latest;
