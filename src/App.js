@@ -15,6 +15,7 @@ import { addStudentToDatabase, deleteStudentFromDatabase, fetchStudents, markAtt
 import Dashboard from './Dashboard';
 import Login from './components/Login';
 import './App.css';
+import Loading from './components/Loading';
 
 const TIMING_SLOTS = [
     { value: '10am-12pm', label: '10am - 12pm' },
@@ -39,6 +40,7 @@ const App = () => {
     const [selectedProgram, setSelectedProgram] = useState('mental_arithmetic');
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const storedAuthStatus = localStorage.getItem('isAuthenticated');
@@ -57,9 +59,12 @@ const App = () => {
     };
 
     useEffect(() => {
+        setLoading(true);
         const fetchData = async () => {
             const studentsData = await fetchStudents(selectedProgram);
             setStudents(studentsData);
+            setLoading(false);
+
         };
         fetchData();
     }, [selectedProgram]);
@@ -169,6 +174,8 @@ const App = () => {
                         <strong>{alertMessage}</strong>
                     </div>
                 )}
+
+                {loading && <Loading />}
 
                 {isAuthenticated && <div className="flex justify-end gap-2 mb-4">
                     <button
