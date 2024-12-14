@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, get, remove } from "firebase/database";
+import { getStorage, ref as storageRef, uploadString } from "firebase/storage";
 import { getAuth, signOut } from "firebase/auth";
 
 const firebaseConfig = {
@@ -10,6 +11,34 @@ const firebaseConfig = {
     messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.REACT_APP_FIREBASE_APP_ID,
     measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
+};
+
+// Note to self: This function is not implemented yet. Might implement it later!
+export const monthlyDatabaseBackup = async () => {
+    try {
+        const db = getDatabase();
+        const storage = getStorage();
+
+        // Fetch entire database
+        const snapshot = await get(ref(db, '/'));
+        const backupData = snapshot.val();
+
+        // Generate unique filename with timestamp
+        const timestamp = new Date().toISOString().replace(/:/g, '-');
+        const filename = `database-backup-${timestamp}.json`;
+
+        // Create a reference to where you'll store the backup in Firebase Storage
+        const backupRef = storageRef(storage, `database-backups/${filename}`);
+
+        // Upload the backup
+        await uploadString(backupRef, JSON.stringify(backupData, null, 2));
+
+        console.log(`Database backup completed: ${filename}`);
+        return true;
+    } catch (error) {
+        console.error("Database backup failed:", error);
+        return false;
+    }
 };
 
 const app = initializeApp(firebaseConfig);
