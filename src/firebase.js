@@ -90,7 +90,6 @@ export const fetchStudents = async (program) => {
     try {
         const studentsRef = ref(db, `students/${program}`);
         const snapshot = await get(studentsRef);
-        console.log("Firebase Snapshot Data:", snapshot.val());
 
         if (!snapshot.exists()) {
             console.log("No students found for this program");
